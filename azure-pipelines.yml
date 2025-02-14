@@ -51,4 +51,4 @@ stages:
           command: 'push'
           packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
           nuGetFeedType: 'internal'
-          publishVstsFeed: 'https://dev.azure.com/PGonzalez2/TestToLearn/_artifacts/feed/PGonzalez2'
+          publishVstsFeed: 'PGonzalez2'
