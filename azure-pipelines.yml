@@ -18,35 +18,31 @@ stages:
      variables:
       BuildConfiguration: release
      steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core SDK'
+        inputs:
+          packageType: 'sdk'
+          version: '6.x'  # Change based on your project
 
-     - task: DotNetCoreCLI@2
-       displayName: Restore Packages
-       inputs:
-        command: 'restore'
-        projects: '**/*.csproj'
-        feedsToUse: 'select'
-        arguments: '--configuration $(BuildConfiguration)'
+      - script: dotnet restore
+        displayName: 'Restore dependencies'
 
-     - task: DotNetCoreCLI@2
-       displayName: Build Apps
-       inputs:
-        command: 'build'
-        projects: '**/*.csproj'
-        arguments: '--configuration $(BuildConfiguration)'
+      - script: dotnet build --configuration Release
+        displayName: 'Build project'
 
-     - script: printenv
+      - script: dotnet pack --configuration Release --output $(Build.ArtifactStagingDirectory)
+        displayName: 'Create NuGet Package'
 
-     - task: DotNetCoreCLI@2
-       displayName: Pack Nuget Package
-       inputs:
-        command: 'pack'
-        packagesToPack: '**/*.csproj'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: 'version'
+      - task: NuGetAuthenticate@1
+        displayName: 'Authenticate to Azure Artifacts'
 
-     - task: DotNetCoreCLI@2
-       inputs:
-        azureSubscription: 'azure-def'
-        command: 'publish'
-        publishWebProjects: true
+      - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg `
+                --source "https://dev.azure.com/PGonzalez2/TestToLearn/_artifacts/feed/PGonzalez2" `
+                --api-key AzureArtifacts
+        displayName: 'Publish to Azure Artifacts'
 
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Package to Pipeline Artifacts'
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: 'NuGetPackage'
