@@ -36,8 +36,8 @@ stages:
       - task: NuGetAuthenticate@1
         displayName: 'Authenticate to Azure Artifacts'
 
-      - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg `
-                --source "https://dev.azure.com/PGonzalez2/TestToLearn/_artifacts/feed/PGonzalez2" `
+      - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/*.nupkg \
+                --source "https://dev.azure.com/PGonzalez2/TestToLearn/_artifacts/feed/PGonzalez2" \
                 --api-key AzureArtifacts
         displayName: 'Publish to Azure Artifacts'
 
