@@ -44,3 +44,11 @@ stages:
         inputs:
           pathToPublish: '$(Build.ArtifactStagingDirectory)'
           artifactName: 'NuGetPackage'
+      
+      - task: DotNetCoreCLI@2
+        displayName: Push Nuget Package
+        inputs:
+          command: 'push'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+          nuGetFeedType: 'internal'
+          publishVstsFeed: https://dev.azure.com/PGonzalez2/TestToLearn/_artifacts/feed/PGonzalez2
